@@ -1,16 +1,35 @@
 ---
+import Site from '../layouts/Site.astro';
+import { getMetar, parseWeather, getRecommendedFlow } from '../utils/weather';
 
+const metar = await getMetar();
+const weather = parseWeather(metar);
+const recommendedFlow = getRecommendedFlow(weather);
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width" />
-    <meta name="generator" content={Astro.generator} />
-    <title>Astro</title>
-  </head>
-  <body>
-    <h1>Astro</h1>
-  </body>
-</html>
+<Site>
+  <h2 class="text-xl text-center pb-4">
+    <span class="text-green-300">{ metar }</span>
+    ({ weather.conditions })
+  </h2>
+  <div class="flex min-h-44">
+    <div class="flex-none w-1/4" id="main-left">
+      <h3 class="text-lg">
+        <strong>Winds</strong>:
+        {
+          weather.windMagnitude[1] == null ?
+          `${weather.windMagnitude[0]} @ ${weather.windDirection}` :
+          `${weather.windMagnitude[0]} gust ${weather.windMagnitude[1]} @ ${weather.windDirection}`
+        }
+      </h3>
+      <h3>
+        <strong>Recommended flow</strong>:
+        { recommendedFlow }
+      </h3>
+    </div>
+    <div class="flex-1" id="main-right">
+      <h3 class="text-lg">Runway crosswinds</h3>
+      <!-- TODO -->
+    </div>
+  </div>
+</Site>
